@@ -3,14 +3,6 @@ import subprocess
 import signal
 import time
 
-import sys
-import os
-import subprocess
-import signal
-import time
-
-print(f"[runtime bootstrap] workspace root added to sys.path: /Users/sixx/.openclaw/workspace")
-
 # Kill running Sixx processes
 def kill_sixx_process():
     try:
@@ -53,4 +45,3 @@ if __name__ == '__main__':
     ]
     for file, content in files:
         reset_file(os.path.join(base_dir, file[0]), content)
-

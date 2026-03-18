@@ -8,11 +8,9 @@ if ROOT not in sys.path:
 
 from orchestrator.sixx import SixxOrchestrator
 
-
 def main():
     orchestrator = SixxOrchestrator()
     orchestrator.run()
-
 
 if __name__ == "__main__":
     main()

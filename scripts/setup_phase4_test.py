@@ -1,10 +1,6 @@
 import sys
 sys.path.insert(0, "/Users/sixx/.openclaw/workspace")
 
-import sys
-import os
-sys.path.insert(0, os.path.expanduser('~/openclaw/workspace'))
-
 from runtime.state_controller import StateController
 
 if __name__ == '__main__':
