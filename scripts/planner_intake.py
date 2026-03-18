@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, "/Users/sixx/.openclaw/workspace")
 from runtime.state_controller import StateController
 
-PLANNER_TASKS_PATH = "/Users/sixx/.openclaw/workspace/planner/planner_tasks.json"
+PLANNER_TASKS_PATH = "/Users/sixx/.openclaw/workspace/pentarch-runtime/planner/planner_tasks.json"
 
 
 def intake_task(planner_task_json):
