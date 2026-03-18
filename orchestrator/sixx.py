@@ -22,35 +22,6 @@ class SixxOrchestrator:
         self.load_last_offset()
         self._event_remainder = ""
 
-    def handle_external_command(self, command: str):
-        import traceback
-        try:
-            print(f"[Sixx] External command received: {command}")
-
-            # basic commands first
-            if command == "status":
-                return {
-                    "tasks": self.state_ctrl.tasks,
-                    "workers": self.state_ctrl.workers
-                }
-
-            if command.startswith("dispatch "):
-                task_id = command.split(" ",1)[1]
-                return self.dispatch(task_id)
-
-            if command == "list_tasks":
-                return self.state_ctrl.tasks
-
-            if command == "list_workers":
-                return self.state_ctrl.workers
-
-            return {"message": "unknown command"}
-
-        except Exception as e:
-            tb = traceback.format_exc()
-            print(f"[Sixx] External command error: {repr(e)}\nTraceback:\n{tb}")
-            return {"error": str(e)}
-
     def load_last_offset(self):
         try:
             with open(self.offset_file, 'r') as f:
@@ -66,14 +37,12 @@ class SixxOrchestrator:
         self.last_offset = offset
 
     def read_new_events(self):
-        import json
         events = []
         try:
             print(f"[Sixx] Current offset before read: {self.last_offset}")
             if not os.path.exists(self.offset_file):
                 self.last_offset = 0
             file_size = os.path.getsize(self.events_file) if os.path.exists(self.events_file) else 0
-            print(f"[Sixx] Events file: {self.events_file}")
             print(f"[Sixx] File size before read: {file_size}")
             if self.last_offset > file_size:
                 self.last_offset = 0
@@ -120,15 +89,12 @@ class SixxOrchestrator:
             else:
                 print(f"[Sixx] No complete lines parsed, offset not advanced")
             print(f"[Sixx] Total events parsed this cycle: {len(events)}")
-            print(f"[Sixx] New offset after read: {self.last_offset}")
         except FileNotFoundError:
             print(f"[Sixx] events.ndjson or offset file not found")
             return []
         return events
 
     def handle_event(self, event):
-        import json
-        print(f"[Sixx] Handling event: {json.dumps(event)}")
         etype = event.get('event') or event.get('type')
         print(f"[Sixx] Handling event type: {etype}")
         handlers = {
@@ -151,19 +117,11 @@ class SixxOrchestrator:
             print(f"[Sixx] Unknown event type: {etype}")
 
     def handle_task_state_changed(self, event):
-        task_id = event.get("task_id")
+        task_id = event["task_id"]
         new_state = event.get("new_state") or event.get("to_state")
-        print("HANDLE_TASK_STATE_CHANGED", task_id, new_state)
+        print("DISPATCHING" if new_state == "backlog" else "NO DISPATCH", task_id, new_state)
         if new_state == "backlog":
-            print("DISPATCHING", task_id)
-            try:
-                self.dispatch(task_id)
-                print("DISPATCH RETURNED", task_id)
-            except Exception as e:
-                print("DISPATCH ERROR", repr(e))
-                raise
-        else:
-            print("NO DISPATCH", task_id, new_state)
+            self.dispatch(task_id)
 
     def handle_worker_done(self, event):
         worker_id = event.get('worker_id')
@@ -180,17 +138,6 @@ class SixxOrchestrator:
         try:
             self.state_ctrl.accept_task(task_id)
             print(f"[Sixx] Task accepted: {task_id}")
-            # Ensure worker termination after acceptance
-            worker_id = None
-            for wid, info in self.state_ctrl.workers.items():
-                if info.get('task_id') == task_id:
-                    worker_id = wid
-                    break
-            if worker_id:
-                self.state_ctrl.terminate_worker(worker_id)
-                print(f"[Sixx] WORKER_TERMINATED event emitted for worker: {worker_id}")
-            else:
-                print(f"[Sixx] No worker found for task {task_id} to terminate")
         except Exception as e:
             print(f"[Sixx] Could not accept task {task_id}: {e}")
 
@@ -215,28 +162,12 @@ class SixxOrchestrator:
         print(f"[Sixx] Entering dispatch with task_id: {task_id}")
         task_info = self.state_ctrl.tasks[task_id]
         print(f"[Sixx] Loaded task_info: {task_info}")
-        owner_label = task_info['details'].get('owner') or task_info['details'].get('owner_label')
-        if owner_label and not owner_label.startswith("owner:"):
-            owner_label = f"owner:{owner_label}"
+        owner_label = task_info['details'].get('owner_label')
         worker_module = self.worker_modules.get(owner_label)
         if not worker_module:
             print(f"[Sixx] No worker module for owner: {owner_label}, cannot dispatch {task_id}")
             return None, None
         worker_id = f"{owner_label}-worker-{task_id}"
-        try:
-            print(f"[Sixx] Activating task {task_id}")
-            self.state_ctrl.activate_task(task_id)
-            print(f"[Sixx] Activating task succeeded")
-        except Exception as e:
-            print(f"[Sixx] activate_task raised exception: {e}")
-            return None, None
-        try:
-            print(f"[Sixx] Activating task {task_id}")
-            self.state_ctrl.activate_task(task_id)
-            print(f"[Sixx] Activating task succeeded")
-        except Exception as e:
-            print(f"[Sixx] activate_task raised exception: {e}")
-            return None, None
         try:
             print(f"[Sixx] Calling link_worker with worker_id {worker_id}")
             self.state_ctrl.link_worker(task_id, worker_id)
@@ -252,26 +183,10 @@ class SixxOrchestrator:
             print(f"[Sixx] start_worker_execution raised exception: {e}")
             return None, None
         print(f"[Sixx] Dispatched worker {worker_id} for task {task_id}")
-        try:
-            result = worker_module.execute(task_id)
-        except Exception as e:
-            print(f"[Sixx] Worker execute raised exception: {e}")
-            try:
-                self.state_ctrl.record_worker_failure(worker_id)
-                print(f"[Sixx] Marked worker {worker_id} as failure")
-            except Exception as inner_e:
-                print(f"[Sixx] Failed to mark worker failure: {inner_e}")
-            result = None
+        result = worker_module.execute(task_id)
         return worker_id, worker_module
 
     def run(self):
-        # Startup backlog recovery dispatch
-        for task_id, task_info in self.state_ctrl.tasks.items():
-            if task_info.get('state') == 'backlog' and not task_info.get('worker_id'):
-                print(f"STARTUP DISPATCHING {task_id}")
-                self.dispatch(task_id)
-
-        # Normal event-driven loop
         while True:
             events = self.read_new_events()
             if events:

@@ -1,0 +1,17 @@
+{
+  "proposals": [
+    {
+      "title": "Improve project documentation",
+      "owner": "architecture",
+      "type": "feature",
+      "evidence": "docs folder present",
+      "problem": "Documentation is incomplete or could be better organized.",
+      "proposal": "Revise and enhance architecture and API docs for accuracy and clarity.",
+      "priority": "medium",
+      "acceptance_criteria": [
+        "Clear, organized docs",
+        "Updated API references"
+      ]
+    }
+  ]
+}

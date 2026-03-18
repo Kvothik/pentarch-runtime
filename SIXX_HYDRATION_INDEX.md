@@ -59,6 +59,12 @@ After each task return:
 - next_task_from_queue
 - blocker_or_none
 
+---
+# Beacon root allowlist policy enforced
+# Pushes from Beacon will be rejected if root contents are outside allowlist:
+# README.md, .gitignore, backend, mobile, infra, datasets, docs, repo_map.md, run-maestro.sh, run-maestro-ios.sh, run-maestro-android.sh
+
+
 
 
 

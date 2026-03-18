@@ -1,0 +1,5 @@
+{"event": "TASK_CREATED", "task_id": "phase4-event-test-1", "details": {"owner": "backend"}, "timestamp": "2026-03-16T02:05:54.613960"}
+{"event": "TASK_STATE_CHANGED", "task_id": "phase4-event-test-1", "old_state": "proposed", "new_state": "backlog", "timestamp": "2026-03-16T02:05:54.622343"}
+{"event": "TASK_STATE_CHANGED", "task_id": "phase4-event-test-1", "old_state": "backlog", "new_state": "active", "timestamp": "2026-03-18T17:14:28.094719"}
+{"event": "WORKER_LINKED", "worker_id": "owner:backend-worker-phase4-event-test-1", "task_id": "phase4-event-test-1", "timestamp": "2026-03-18T17:14:28.099530"}
+{"event": "WORKER_STATE_CHANGED", "worker_id": "owner:backend-worker-phase4-event-test-1", "old_state": "linked", "new_state": "executing", "timestamp": "2026-03-18T17:14:28.100931"}

@@ -1,0 +1,9 @@
+{
+  "phase4-event-test-1": {
+    "state": "active",
+    "details": {
+      "owner": "backend"
+    },
+    "worker_id": "owner:backend-worker-phase4-event-test-1"
+  }
+}
