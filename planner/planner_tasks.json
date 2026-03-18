@@ -1,14 +1,30 @@
 [
- {
- "id": "phase9-active",
- "title": "Rerun full API workflow tests and validation tracking",
- "status": "active",
- "phase": "Phase 9"
- },
- {
- "id": "phase9-next",
- "title": "Stage-level regression test creation and fixture stabilization",
- "status": "pending",
- "phase": "Phase 9"
- }
+  {
+    "id": "phase9-next",
+    "title": "Stage-level regression test creation and fixture stabilization",
+    "status": "active",
+    "acceptance_criteria": [
+      "UI end-to-end work comes immediately after phase9-follow1",
+      "This task is the next task after backend decoupling"
+    ],
+    "verification_required": true,
+    "sentinel_required": false,
+    "accepted": false,
+    "accepted_by": null
+  },
+  {
+    "id": "phase9-follow2",
+    "title": "Stabilize Android validation lane and emulator startup path",
+    "status": "pending"
+  },
+  {
+    "id": "phase9-follow3",
+    "title": "Separate iOS validation into its own optional lane",
+    "status": "pending"
+  },
+  {
+    "id": "phase9-follow4",
+    "title": "Add stable rerun path for regression validation commands",
+    "status": "pending"
+  }
 ]
