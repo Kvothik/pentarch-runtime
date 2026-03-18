@@ -30,8 +30,11 @@ Ensure environment and paths are properly configured before operations.
 
 ## CRITICAL SYSTEM RULES (LOAD ON START)
 
-- Beacon product repo path:
- /Users/sixx/.openclaw/workspace/beacon
+- Beacon product repo path: /Users/sixx/.openclaw/workspace/beacon
+
+- pentarch-runtime system/runtime repo path: /Users/sixx/.openclaw/workspace/pentarch-runtime
+
+- Canonical queue path: /Users/sixx/.openclaw/workspace/pentarch-runtime/planner/planner_tasks.json
 
 - All product code MUST exist only in Beacon
 
