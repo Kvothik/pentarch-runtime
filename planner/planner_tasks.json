@@ -16,8 +16,16 @@
   {
     "id": "phase9-follow2",
     "title": "Stabilize Android validation lane and emulator startup path",
-    "status": "blocked",
-    "blocker_reason": "Android emulator tooling unavailable or not starting, blocking Android validation lane progress."
+    "status": "active",
+    "acceptance_criteria": [
+      "Android emulator available and running",
+      "Android validation lane test runs on existing device/emulator",
+      "Validation lane startup issues resolved"
+    ],
+    "verification_required": true,
+    "sentinel_required": false,
+    "accepted": false,
+    "accepted_by": null
   },
   {
     "id": "phase9-follow3",
